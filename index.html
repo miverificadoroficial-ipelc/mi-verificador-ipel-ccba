@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificador Oficial IPELC</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 30px 15px;
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            background-color: #0b0f19;
+            
+            /* LAS BURBUJAS FLOTANTES (Glow de luces de colores de fondo) */
+            background-image: 
+                radial-gradient(circle at 85% 15%, rgba(167, 58, 23, 0.22) 0%, rgba(32, 18, 43, 0.6) 35%, transparent 70%),
+                radial-gradient(circle at 15% 80%, rgba(0, 123, 182, 0.18) 0%, rgba(14, 27, 48, 0.6) 40%, transparent 70%);
+            
+            background-attachment: fixed;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* MARCA DE AGUA IPELC REPETIDA */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            z-index: 1;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120' viewBox='0 0 240 120'%3E%3Ctext x='20' y='60' fill='rgba(255, 255, 255, 0.022)' font-family='Segoe UI, Arial' font-weight='900' font-size='20' transform='rotate(-25 100 60)'%3EIPELC OFICIAL%3C/text%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .main-content {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .logos-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .logo-box {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+            padding: 4px;
+            box-sizing: border-box;
+        }
+
+        .logo-box svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .title-main { font-size: 2.2rem; font-weight: 700; margin: 0 0 6px 0; text-align: center; letter-spacing: -0.5px; }
+        .title-sub { font-size: 0.9rem; color: #a4a9bd; text-align: center; margin: 0 0 28px 0; line-height: 1.4; }
+        
+        .search-wrapper {
+            background: #090e1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 8px 10px;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .search-code { padding-left: 12px; font-size: 1.15rem; color: #e2e8f0; font-family: monospace; }
+        .search-btn { background: #007bb6; color: white; border: none; padding: 10px 24px; border-radius: 10px; font-size: 0.9rem; font-weight: 600; }
+        
+        .block-card {
+            background: rgba(22, 29, 49, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 24px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .card-first-accent { border-top: 4px solid #00bfa5; }
+        .item-label { color: #00b0ff; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.9px; margin-bottom: 8px; }
+        .item-val-large { font-size: 1.85rem; font-weight: 700; line-height: 1.25; margin-bottom: 16px; }
+        .item-val-med { font-size: 1.1rem; color: #f1f5f9; font-weight: 500; }
+        
+        .status-pill {
+            background: rgba(0, 230, 118, 0.08);
+            border: 1px solid rgba(0, 230, 118, 0.25);
+            color: #00e676;
+            padding: 8px 16px;
+            border-radius: 10px;
+            display: inline-block;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        .status-pill span { display: block; font-size: 0.65rem; color: #b9f6ca; margin-bottom: 2px; }
+        
+        .alert-legal {
+            background: rgba(9, 14, 26, 0.6);
+            border: 1px solid rgba(0, 191, 165, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 25px;
+        }
+        .alert-legal strong { color: #00bfa5; display: block; text-align: center; font-size: 0.9rem; margin-bottom: 5px; }
+        .alert-legal p { color: #94a3b8; font-size: 0.8rem; text-align: center; margin: 0; }
+        
+        .btn-reload { color: #94a3b8; background: none; border: none; margin-bottom: 30px; cursor: pointer; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <!-- CONTENEDOR DE LOGOS -->
+        <div class="logos-container">
+            <!-- Escudo Nacional -->
+            <div class="logo-box">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="48" fill="#004d40"/>
+                    <circle cx="50" cy="50" r="44" fill="#ffffff"/>
+                    <path d="M15,36 Q50,22 85,36 L81,46 Q50,32 19,46 Z" fill="#d50000"/>
+                    <path d="M19,46 Q50,32 81,46 L77,56 Q50,42 23,56 Z" fill="#ffea00"/>
+                    <path d="M23,56 Q50,42 77,56 L73,66 Q50,52 27,66 Z" fill="#00c853"/>
+                    <ellipse cx="50" cy="53" rx="16" ry="12" fill="#0d47a1"/>
+                    <ellipse cx="50" cy="53" rx="13" ry="9" fill="#90caf9"/>
+                    <circle cx="50" cy="54" r="5" fill="#ffea00"/>
+                </svg>
+            </div>
+            <!-- Logotipo IPELC -->
+            <div class="logo-box">
+                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="46" fill="#ffffff"/>
+                    <path d="M32,40 C28,52 28,68 40,76 C45,79 55,79 60,76 C72,68 72,52 68,40 Z" fill="#a73a17"/>
+                    <path d="M38,40 L62,40 L58,26 L42,26 Z" fill="#ca5129"/>
+                    <ellipse cx="50" cy="56" rx="12" ry="8" fill="#fdd835"/>
+                </svg>
+            </div>
+        </div>
+
+        <h1 class="title-main">Verificador Oficial</h1>
+        <p class="title-sub">Instituto Plurinacional de Estudio de Lenguas y Culturas</p>
+
+        <!-- BUSCADOR -->
+        <div class="search-wrapper">
+            <div class="search-code">5920381740621</div>
+            <button class="search-btn">Verificar</button>
+        </div>
+
+        <!-- TARJETA TITULAR -->
+        <div class="block-card card-first-accent">
+            <div class="item-label">Certificado como hablante del idioma originario</div>
+            <div class="item-val-large">RUMINA ROJAS <br>CUBA</div>
+            <div class="item-label">CI:</div>
+            <div class="item-val-med" style="font-family: monospace;">9394670</div>
+            <div style="height: 10px;"></div>
+            <div class="status-pill"><span>ESTADO</span>APROBADO</div>
+        </div>
+
+        <!-- TARJETA DETALLES ACADÉMICOS -->
+        <div class="block-card">
+            <div class="item-label">Idioma / Nación</div>
+            <div class="item-val-med" style="font-weight: 700;">QUECHUA - TOMÁS KATARI - KURUSA LLAWI</div>
+            <div style="height: 14px;"></div>
+
+            <div class="item-label">Código Certificado</div>
+            <div class="item-val-med" style="font-family: monospace; color: #cbd5e1;">5920381740621</div>
+            <div style="height: 14px;"></div>
+
+            <div class="item-label">Nivel Oral</div>
+            <div class="item-val-med">Intermedio</div>
+            <div style="height: 14px;"></div>
+
+            <div class="item-label">Fecha de Emisión</div>
+            <div class="item-val-med">📅 17-06-2026</div>
+        </div>
+
+        <!-- PIE LEGAL -->
+        <div class="alert-legal">
+            <strong>Importante:</strong>
+            <p>Si la información expuesta coincide con la información impresa del documento que desea validar, el certificado puede considerarse válido, caso contrario es inválido.</p>
+        </div>
+
+        <button class="btn-reload" onclick="window.location.reload();">🔄 Nueva Consulta</button>
+    </div>
+</body>
+</html>
